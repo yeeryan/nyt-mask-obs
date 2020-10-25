@@ -1,0 +1,15 @@
+﻿zip,area,boro,obs_mask,women_mask,men_mask
+11355,Flushing,queens,0.99,1,0.98
+11368,Corona,queens,0.86,0.85,0.88
+11103,Astoria,queens,0.86,0.9,0.81
+11212,Brownsville,brooklyn,0.75,0.67,0.54
+11230,Ditmas Park,brooklyn,0.79,0.88,0.7
+10003,East Village,manhattan,0.77,0.84,0.72
+11691,Far Rockaway,queens,0.62,0.7,0.55
+10468,Fordham Manor,bronx,0.77,0.85,0.7
+10027,Harlem,manhattan,0.66,0.79,0.56
+11432,Jamaica,queens,0.75,0.87,0.62
+10451,Mott Haven,bronx,0.85,0.91,0.76
+11217,Park Slope,brooklyn,0.97,0.98,0.95
+10301,St. George,richmond,0.66,0.68,0.65
+11694,Rockaway Beach,queens,0.2,0.24,0.16
