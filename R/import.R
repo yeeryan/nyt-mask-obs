@@ -13,3 +13,12 @@ nyc.covid19.data <- load_nyc.health("data/0713 data-by-modzcta.csv", "2020-07-13
   add_row(load_nyc.health("data/0803 data-by-modzcta.csv", "2020-08-03")) %>% 
   add_row(load_nyc.health("data/0810 data-by-modzcta.csv", "2020-08-10")) %>% 
   rename(zip = MODIFIED_ZCTA)
+
+
+#Importing coordinates for ZCTA for NYC 
+nyc.geonames <- read_tsv(file = "data/US/US.txt",
+                          col_names = c("country","zip","name","state","state_code","county",
+                                        "county_code","city","city_code","lat","lon","accuracy")) %>% 
+  filter(state_code == "NY") %>% 
+  filter(county %in% c("New York","Bronx","Queens","Kings","Richmond")) %>% 
+  select(c(zip, name, county, lat, lon))
