@@ -2,6 +2,8 @@
 
 ### Current Status: 🟡 In Development 🟡
 
+## Pre-development map ACTIVE: https://yeeryan.github.io/nyt-mask-obs/
+
 
 data visualizaiton and analysis of the New York Times article "Are New Yorkers Wearing Masks? Here’s What We Found in Each Borough" and NYC Health COVID 19 counts
 
