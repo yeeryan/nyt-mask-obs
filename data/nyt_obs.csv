@@ -1,15 +1,15 @@
-﻿zip,area,boro,obs_mask,women_mask,men_mask
-11355,Flushing,queens,0.99,1,0.98
-11368,Corona,queens,0.86,0.85,0.88
-11103,Astoria,queens,0.86,0.9,0.81
-11212,Brownsville,brooklyn,0.75,0.67,0.54
-11230,Ditmas Park,brooklyn,0.79,0.88,0.7
-10003,East Village,manhattan,0.77,0.84,0.72
-11691,Far Rockaway,queens,0.62,0.7,0.55
-10468,Fordham Manor,bronx,0.77,0.85,0.7
-10027,Harlem,manhattan,0.66,0.79,0.56
-11432,Jamaica,queens,0.75,0.87,0.62
-10451,Mott Haven,bronx,0.85,0.91,0.76
-11217,Park Slope,brooklyn,0.97,0.98,0.95
-10301,St. George,richmond,0.66,0.68,0.65
-11694,Rockaway Beach,queens,0.2,0.24,0.16
+﻿zip,area,boro,obs_mask,women_mask,men_mask,location
+11355,Flushing,Queens,0.99,1,0.98,Main Street and Sanford Avenue
+11368,Corona,Queens,0.86,0.85,0.88,National Street near Roosevelt Avenue
+11103,Astoria,Queens,0.86,0.9,0.81,Broadway and Steinway Street
+11212,Brownsville,Brooklyn,0.75,0.67,0.54,Pitkin Avenue and Chester Street
+11230,Ditmas Park,Brooklyn,0.79,0.88,0.7,Newkirk and Coney Island Avenues
+10003,East Village,Manhattan,0.77,0.84,0.72,St. Marks Place and Second Avenue
+11691,Far Rockaway,Queens,0.62,0.7,0.55,Beach Channel Drive and Mott Avenue
+10468,Fordham Manor,Bronx,0.77,0.85,0.7,East Kingsbridge Road and Morris Avenue
+10027,Harlem,Manhattan,0.66,0.79,0.56,Malcolm X Boulevard and West 124th Street
+11432,Jamaica,Queens,0.75,0.87,0.62,Parsons Boulevard and Jamaica Avenue
+10451,Mott Haven,Bronx,0.85,0.91,0.76,East 149th Street and Morris Avenue
+11217,Park Slope,Brooklyn,0.97,0.98,0.95,Seventh Avenue and Union Street
+10301,St. George,Staten Island,0.66,0.68,0.65,Stuyvesant Place and Hyatt Street
+11694,Rockaway Beach,Queens,0.2,0.24,0.16,Boardwalk near Beach 116th Street
