@@ -1,5 +1,8 @@
+#New York Times Observations---------
 #Importing NYT Observations
 nyt.data <- read_csv(file = "data/nyt_obs.csv")
+
+#NYC Health COVID 19 Data-------------
 
 #Function to load NYC Health COVID19 data, adding date column
 load_nyc.health <- function(csv, day) {
@@ -14,11 +17,16 @@ nyc.covid19.data <- load_nyc.health("data/0713 data-by-modzcta.csv", "2020-07-13
   add_row(load_nyc.health("data/0810 data-by-modzcta.csv", "2020-08-10")) %>% 
   rename(zip = MODIFIED_ZCTA)
 
+#ZCTA Spacial Data from the US Census--------
+#Defining NYC region ZCTAs
+load_nyc.zcta <- function(){
+  nyc.zcta <- c("100","101","102","103","104",
+                "111","112","113","114","116")
+  
+  zctas(cb = TRUE, starts_with = nyc.zcta, class = "sf")
+}
+nyc <- load_nyc.zcta()
 
-#Importing coordinates for ZCTA for NYC 
-nyc.geonames <- read_tsv(file = "data/US/US.txt",
-                          col_names = c("country","zip","name","state","state_code","county",
-                                        "county_code","city","city_code","lat","lon","accuracy")) %>% 
-  filter(state_code == "NY") %>% 
-  filter(county %in% c("New York","Bronx","Queens","Kings","Richmond")) %>% 
-  select(c(zip, name, county, lat, lon))
+#Retrieving ZCTA sf from Census
+nyc$ZCTA5CE10 <- as.double(as.character(nyc$ZCTA5CE10))
+
