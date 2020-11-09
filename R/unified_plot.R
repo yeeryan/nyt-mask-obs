@@ -108,5 +108,5 @@ nyc.plot <- function() {
   return(total.plot)
 }
 
-nyc.plot()
+unified.plot <- nyc.plot()
 
