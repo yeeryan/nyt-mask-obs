@@ -6,6 +6,9 @@
 
 https://yeeryan.github.io/nyt-mask-obs/
 
+
+https://yeeryan.github.io/nyt-mask-obs/
+
 ## Overview
 Data visualizaiton and analysis of the New York Times article "Are New Yorkers Wearing Masks? Here’s What We Found in Each Borough" and COVID 19 counts per 100,000 people from NYC Health around the time the mask observations were made.
 
