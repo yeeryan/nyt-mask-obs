@@ -17,16 +17,3 @@ nyc.covid19.data <- load_nyc.health("data/0713 data-by-modzcta.csv", "2020-07-13
   add_row(load_nyc.health("data/0810 data-by-modzcta.csv", "2020-08-10")) %>% 
   rename(zip = MODIFIED_ZCTA)
 
-#ZCTA Spacial Data from the US Census--------
-#Defining NYC region ZCTAs
-load_nyc.zcta <- function(){
-  nyc.zcta <- c("100","101","102","103","104",
-                "111","112","113","114","116")
-  
-  zctas(cb = TRUE, starts_with = nyc.zcta, class = "sf")
-}
-nyc <- load_nyc.zcta()
-
-#Retrieving ZCTA sf from Census
-nyc$ZCTA5CE10 <- as.double(as.character(nyc$ZCTA5CE10))
-
