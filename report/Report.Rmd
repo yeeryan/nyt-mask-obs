@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggfortify)
+library(moderndive)
 library(dplyr)
 
 setwd("~/Projects/nyt-mask-obs/")
@@ -31,8 +32,18 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+```{r July 13 Analysis}
+data_0713 <- as.data.frame(date_covid19.mask("2020-07-13"))
+
+mask.data_0713 <- lm(COVID_CASE_RATE ~ obs_mask + PERCENT_POSITIVE + POP_DENOMINATOR, data_0713)
+
+nomask.data_0713 <- lm(COVID_CASE_RATE ~ PERCENT_POSITIVE + POP_DENOMINATOR, data_0713)
+  
+summary(mask.data_0713)
+summary(nomask.data_0713)
+
+
+
 ```
 
 ## Including Plots
