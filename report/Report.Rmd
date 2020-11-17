@@ -9,12 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggfortify)
-library(moderndive)
+library(plotly)
 library(dplyr)
 
 setwd("~/Projects/nyt-mask-obs/")
 
-source("R/import.R")
+#source("R/import.R")
+source("setup.R")
+source("R/unified_plot.R")
+
 
 #Merge NYC Health Data and NYT Mask Observations
 nyc.covid19.mask <- inner_join(nyc.covid19.data, nyt.data, by="zip")
@@ -26,7 +29,31 @@ date_covid19.mask <- function(day) {
 
 ```
 
-## ADD CORRELATION GRAPHS
+
+```{r Map, echo=FALSE, results='HIDE', warning=FALSE}
+unified.plot
+```
+
+```{r COVID19 Case Rate Graph, echo=FALSE, results='HIDE', warning=FALSE}
+plot_ly(nyc.covid19.mask,
+        x = ~date,
+        y = ~COVID_CASE_RATE,
+        color = ~area,
+        mode = 'lines+markers'
+)
+
+```
+
+```{r COVID19 Mask Observations, echo=FALSE, results='HIDE', warning=FALSE}
+plot_ly(nyt.data,
+        x = ~area,
+        y = ~obs_mask,
+        color = ~area,
+        mode = 'bar'
+)
+```
+
+
 
 
 ```{r July 13 Analysis - Linear Models}
@@ -38,9 +65,6 @@ nomask.data_0713 <- lm(COVID_CASE_RATE ~ PERCENT_POSITIVE + POP_DENOMINATOR, dat
   
 summary(mask.data_0713)
 summary(nomask.data_0713)
-
-
-
 ```
 
 ```{r July 13 Analysis - ANOVA}
