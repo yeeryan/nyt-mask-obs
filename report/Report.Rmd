@@ -20,12 +20,24 @@ source("R/unified_plot.R")
 
 
 #Merge NYC Health Data and NYT Mask Observations
-nyc.covid19.mask <- inner_join(nyc.covid19.data, nyt.data, by="zip")
+nyc.covid19.mask <- inner_join(nyc.covid19.data, nyt.data, by="zip") %>% 
+  mutate(PERCENT_POSITIVE = PERCENT_POSITIVE/100)
+# %>% 
+  # mutate(obs_mask = scales::percent(obs_mask)) %>% 
+  # mutate(women_mask = scales::percent(women_mask)) %>% 
+  # mutate(men_mask = scales::percent(men_mask))
 
 #Filter Data Function
 date_covid19.mask <- function(day) {
   nyc.covid19.mask %>% filter(date == day)
 }
+
+data_0713 <- date_covid19.mask("2020-07-13")
+data_0720 <- date_covid19.mask("2020-07-20")
+data_0727 <- date_covid19.mask("2020-07-27")
+data_0803 <- date_covid19.mask("2020-08-03")
+data_0810 <- date_covid19.mask("2020-08-10")
+
 
 ```
 
@@ -53,11 +65,51 @@ plot_ly(nyt.data,
 )
 ```
 
+```{r COVID19 Mask Observations and Percent Positive, echo=FALSE, results='HIDE', warning=FALSE}
+plot_ly(nyt.data,
+        x = ~area,
+        y = ~obs_mask,
+        type = 'scatter',
+        mode = 'markers',
+        visible = T) %>% 
+  add_trace(data_0713, y = data_0713$PERCENT_POSITIVE, visible = T) %>% 
+  add_trace(data_0720, y = data_0720$PERCENT_POSITIVE, visible = F) %>% 
+  add_trace(data_0727, y = data_0727$PERCENT_POSITIVE, visible = F) %>% 
+  add_trace(data_0803, y = data_0803$PERCENT_POSITIVE, visible = F) %>% 
+  add_trace(data_0810, y = data_0810$PERCENT_POSITIVE, visible = F) %>% 
+  layout(
+    showlegend = FALSE,
+    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate"),
+    updatemenus = list(
+      list(
+        y = 1,
+        x = 1,
+        buttons = list(
+          list(method = "restyle",
+               label = "July 13",
+               args = list("visible", list(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE))),
+          list(method = "restyle",
+               label = "July 20",
+               args = list("visible", list(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE))),
+          list(method = "restyle",
+               label = "July 27",
+               args = list("visible", list(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE))),
+          list(method = "restyle",
+               label = "August 3",
+               args = list("visible", list(TRUE, FALSE, FALSE, FALSE, TRUE, FALSE))),
+          list(method = "restyle",
+               label = "August 10",
+               args = list("visible", list(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE))),
+          
+        )
+      )
+    )
+  )
 
-
+```
 
 ```{r July 13 Analysis - Linear Models}
-data_0713 <- as.data.frame(date_covid19.mask("2020-07-13"))
+data_0713 <- date_covid19.mask("2020-07-13")
 
 mask.data_0713 <- lm(COVID_CASE_RATE ~ obs_mask + PERCENT_POSITIVE + POP_DENOMINATOR, data_0713)
 
