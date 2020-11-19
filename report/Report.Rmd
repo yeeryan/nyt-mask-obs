@@ -51,7 +51,12 @@ plot_ly(nyc.covid19.mask,
         x = ~date,
         y = ~COVID_CASE_RATE,
         color = ~area,
-        mode = 'lines+markers'
+        mode = 'lines+markers') %>% 
+  layout(
+    title = 'COVID 19 Case Rate per 100,000',
+    showlegend = TRUE,
+    yaxis = list(title = "COVID 19 Case Rate"),
+    xaxis = list(title = "Date")
 )
 
 ```
@@ -71,42 +76,22 @@ plot_ly(nyt.data,
         y = ~obs_mask,
         type = 'scatter',
         mode = 'markers',
+        name = 'Mask Rate',
         visible = T) %>% 
-  add_trace(data_0713, y = data_0713$PERCENT_POSITIVE, visible = T) %>% 
-  add_trace(data_0720, y = data_0720$PERCENT_POSITIVE, visible = F) %>% 
-  add_trace(data_0727, y = data_0727$PERCENT_POSITIVE, visible = F) %>% 
-  add_trace(data_0803, y = data_0803$PERCENT_POSITIVE, visible = F) %>% 
-  add_trace(data_0810, y = data_0810$PERCENT_POSITIVE, visible = F) %>% 
+  add_trace(data_0713, y = data_0713$PERCENT_POSITIVE, name = 'July 13', visible = T) %>% 
+  add_trace(data_0720, y = data_0720$PERCENT_POSITIVE, name = 'July 20', visible = T) %>% 
+  add_trace(data_0727, y = data_0727$PERCENT_POSITIVE, name = 'July 27', visible = T) %>% 
+  add_trace(data_0803, y = data_0803$PERCENT_POSITIVE, name = 'August 3', visible = T) %>% 
+  add_trace(data_0810, y = data_0810$PERCENT_POSITIVE, name = 'August 10', visible = T) %>% 
   layout(
-    showlegend = FALSE,
-    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate"),
-    updatemenus = list(
-      list(
-        y = 1,
-        x = 1,
-        buttons = list(
-          list(method = "restyle",
-               label = "July 13",
-               args = list("visible", list(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE))),
-          list(method = "restyle",
-               label = "July 20",
-               args = list("visible", list(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE))),
-          list(method = "restyle",
-               label = "July 27",
-               args = list("visible", list(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE))),
-          list(method = "restyle",
-               label = "August 3",
-               args = list("visible", list(TRUE, FALSE, FALSE, FALSE, TRUE, FALSE))),
-          list(method = "restyle",
-               label = "August 10",
-               args = list("visible", list(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE))),
-          
-        )
-      )
-    )
-  )
-
+    title = 'Observed Mask Rates & COVID 19 Positive Rates by Area',
+    showlegend = TRUE,
+    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate",tickformat = "%"),
+    xaxis = list(title = "Area"),
+    hovermode = 'compare'
+)
 ```
+
 
 ```{r July 13 Analysis - Linear Models}
 data_0713 <- date_covid19.mask("2020-07-13")
