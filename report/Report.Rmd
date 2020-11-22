@@ -92,33 +92,37 @@ plot_ly(nyt.data,
 )
 ```
 
+# Analysis
 
-```{r July 13 Analysis - Linear Models}
-data_0713 <- date_covid19.mask("2020-07-13")
+```{r table of average change}
+nyc.avg.rate <- nyc.covid19.mask %>% 
+  select("zip", "date","area", "COVID_CASE_RATE") %>% 
+  dplyr::group_by(zip) %>% 
+  dplyr::arrange(zip, date) %>% 
+  mutate(rate = (COVID_CASE_RATE - lag(COVID_CASE_RATE))/lag(COVID_CASE_RATE)) %>% 
+  summarise(avg_rate = mean(rate, na.rm = TRUE))
 
-mask.data_0713 <- lm(COVID_CASE_RATE ~ obs_mask + PERCENT_POSITIVE + POP_DENOMINATOR, data_0713)
-
-nomask.data_0713 <- lm(COVID_CASE_RATE ~ PERCENT_POSITIVE + POP_DENOMINATOR, data_0713)
-  
-summary(mask.data_0713)
-summary(nomask.data_0713)
-```
-
-```{r July 13 Analysis - ANOVA}
-anova(mask.data_0713, nomask.data_0713)
+nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.rate, by ="zip") %>% 
+  mutate(obs_mask = 1 - obs_mask)
 
 ```
 
+```{r chart}
+plot_ly(nyc.avg.rate.mask,
+        x = ~area,
+        y = ~obs_mask,
+        type = 'scatter',
+        mode = 'markers',
+        name = 'Mask Rate',
+        visible = T) %>% 
+  add_trace(nyc.avg.rate.mask, y = ~avg_rate, name = 'Avg. Change Rate', visible = T) %>% 
+  layout(
+    title = 'Observed Mask Rates & COVID 19 Positive Rates by Area',
+    showlegend = TRUE,
+    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate",tickformat = "%"),
+    xaxis = list(title = "Area"),
+    hovermode = 'compare'
+)
 
-```{r July 13 Analysis - Confidence Intervals}
-confint(mask.data_0713)
-
-confint(nomask.data_0713)
-```
-
-```{r July 13 Analysis - Diagnostic Plots}
-autoplot(mask.data_0713)
-
-autoplot(nomask.data_0713)
 
 ```
