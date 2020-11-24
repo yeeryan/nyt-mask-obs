@@ -95,7 +95,7 @@ plot_ly(nyt.data,
 # Analysis
 
 ```{r table of average change}
-nyc.avg.rate <- nyc.covid19.mask %>% 
+nyc.avg.caserate <- nyc.covid19.mask %>% 
   select("zip", "date","area", "COVID_CASE_RATE") %>% 
   dplyr::group_by(zip) %>% 
   dplyr::arrange(zip, date) %>% 
