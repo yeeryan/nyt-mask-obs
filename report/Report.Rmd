@@ -126,3 +126,8 @@ plot_ly(nyc.avg.rate.mask,
 
 
 ```
+
+```{r}
+lm(formula = avg_rate ~ obs_mask, data = nyc.avg.rate.mask)
+  
+)
