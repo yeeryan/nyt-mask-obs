@@ -102,7 +102,7 @@ nyc.avg.caserate <- nyc.covid19.mask %>%
   mutate(rate = (COVID_CASE_RATE - lag(COVID_CASE_RATE))/lag(COVID_CASE_RATE)) %>% 
   summarise(avg_rate = mean(rate, na.rm = TRUE))
 
-nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.rate, by ="zip") %>% 
+nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>% 
   mutate(obs_mask = 1 - obs_mask)
 
 ```
@@ -128,6 +128,8 @@ plot_ly(nyc.avg.rate.mask,
 ```
 
 ```{r}
-lm(formula = avg_rate ~ obs_mask, data = nyc.avg.rate.mask)
-  
-)
+avg_rate.mask_model <- lm(formula = avg_rate ~ obs_mask, data = nyc.avg.rate.mask)
+
+summary(avg_rate.mask_model)
+
+```
