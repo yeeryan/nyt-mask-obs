@@ -1,5 +1,5 @@
 ---
-title: "Mask Observations Report"
+title: "NYC COVID 19 Rates & Observed Mask Usage"
 author: "Ryan Yee"
 date: "11/11/2020"
 output: html_document
@@ -41,10 +41,30 @@ data_0810 <- date_covid19.mask("2020-08-10")
 
 ```
 
+<div style= "float:right;position: relative; top: -80px; padding:10px">
 
 ```{r Map, echo=FALSE, results='HIDE', warning=FALSE}
 unified.plot
 ```
+Toggle between layers to view COVID 19 rates from NYC Health and observed mask usage by the New York Times. 
+
+Click on an area for more info.
+
+</div>
+
+<p style="font-size:10px">
+#### NYC Health (Dates)
+
+Using data from NYC Health, these layers map out city-wide COVID 19 Rates per 100,000 People in each ZCTA. This map includes weekly rates from July 13 to August 10, 2020. Mouseover of ZCTA shows area name, borough, ZCTA, and case rate as designated by NYC Health.
+
+#### New York Times Mask Observations (NYT Obs)
+
+Using data from the New York Times article "Are New Yorkers Wearing Masks?", this layer maps out observed mask usage rates by the Times' reporters between July 27 to July 30, 2020. The additional NYT Obs layers shows observed mask usage rates based on perceived gender. The ZCTAs where the intersections of the Times reporters were used to map out observed mask usage rates and to compare NYC Health data with. Mouseover of the ZCTA shows area name, borough, and intersection of observation as reported by the Times. ZCTAs were found by me. 
+
+Link to article:
+https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html
+</p>
+
 
 ```{r COVID19 Case Rate Graph, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyc.covid19.mask,
