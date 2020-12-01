@@ -65,6 +65,45 @@ Link to article:
 https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html
 </p>
 
+-----
+# Overview
+
+## Methodology
+This report aims to compare the observed mask usage rates in select areas in NYC to the COVID 19 data taken around the same time. The data is shown with visuals such as maps and charts for comparison across areas in NYC. Each area in this analysis is divided by ZCTA which is used by NYC Health and can be inferred from the NY Times article.  The dates chosen are due to the estimated 2 week time period for COVID 19-related symptoms show. 
+
+[FINISH SECTION LATER]
+
+## Motive
+I wanted to see if the observed mask usage rates from the Times would correlate with the the spread of COVID 19 in NYC, and also wanted an opportunity to use data visualisations to compare related data sets.
+
+## Sources
+
+### NYC Health
+
+https://www1.nyc.gov/site/doh/covid/covid-19-data.page  
+
+https://github.com/nychealth/coronavirus-data
+
+NYC Health publishes their official COVID 19 data their website and Github. I used the `data-by-modzcta.csv` data sets from the commits on the following dates: 07-13, 07-20, 07-27, 08-03, 08-10. Within these data sets, I used the `COVID_CASE_COUNT` and `PERCENT_POSITIVE` variables to determine the spread of COVID 19. Here's an overview from NYC Health:
+
+COVID_CASE_RATE - Rate of confirmed cases per 100,000 people by modified ZCTA
+PERCENT_POSITIVE -	Percentage of people ever tested for COVID-19 with a polymerase chain reaction (PCR) test who tested positive
+
+I chose `COVID_CASE_RATE` as it was an easy to understand metric that adjusted for population within each ZCTA. 
+
+A major limitation of this dataset, as well as most relating to COVID 19 is that this only includes detected and confirmed cases of the disease. There is the possibility that there are cases of the virus that contributes to spread which are not included in this data set. 
+
+
+### The New York Times - "Are New Yorkers Wearing Masks?"
+
+https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html
+
+The article from the New York Times shares their observed mask usage in 14 locations throughout New York City. These observations were taken between July 27-30 in the daytime between 09:00 and 19:00. According to the Times, 340 to 567 were observed in each location and only counted pedestrians (people in cars, skateboards, bikes were excluded). The data is presented with the intersection observations were made, an overall percentage of mask usage, and percentages of mask usage for men and women. Gender was determined by someone's 'apparent gender'. I manually compiled the Times' observations across the city and used the ZCTAs that the intersections mentioned were located. 
+
+A major limitation of this data set is that it only provides one observation per location so trends over time cannot be inferred. Observations were made only on specific intersections and are not necessarily representative of the entire ZCTA. The Times stated that their selected observation spots were chosen due to their expected population density. 
+
+
+
 
 ```{r COVID19 Case Rate Graph, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyc.covid19.mask,
