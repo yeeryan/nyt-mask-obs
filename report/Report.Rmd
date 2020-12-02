@@ -103,7 +103,22 @@ The article from the New York Times shares their observed mask usage in 14 locat
 A major limitation of this data set is that it only provides one observation per location so trends over time cannot be inferred. Observations were made only on specific intersections and are not necessarily representative of the entire ZCTA. The Times stated that their selected observation spots were chosen due to their expected population density. 
 
 
+=====
 
+# 'Are New Yorkers Wearing Masks' Data
+
+### Visual
+
+```{r COVID19 Mask Observations, echo=FALSE, results='HIDE', warning=FALSE}
+plot_ly(nyt.data,
+        x = ~area,
+        y = ~obs_mask,
+        color = ~area,
+        mode = 'bar'
+)
+```
+
+This is a chart that depicts the observed mask usage rates from the Times. The data is a percentage of the observed population in these areas that were seen using masks. Some notable highlights include the very high mask usage in Flushing, an area with strong ties to mainland China, and in areas like Corona that were heavily impacted by the spread of COVID 19. It should be noted that Rockaway Beach is an outlier as it is a beach, while the other locations were busy intersections. 
 
 ```{r COVID19 Case Rate Graph, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyc.covid19.mask,
@@ -120,14 +135,7 @@ plot_ly(nyc.covid19.mask,
 
 ```
 
-```{r COVID19 Mask Observations, echo=FALSE, results='HIDE', warning=FALSE}
-plot_ly(nyt.data,
-        x = ~area,
-        y = ~obs_mask,
-        color = ~area,
-        mode = 'bar'
-)
-```
+
 
 ```{r COVID19 Mask Observations and Percent Positive, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyt.data,
