@@ -103,9 +103,10 @@ The article from the New York Times shares their observed mask usage in 14 locat
 A major limitation of this data set is that it only provides one observation per location so trends over time cannot be inferred. Observations were made only on specific intersections and are not necessarily representative of the entire ZCTA. The Times stated that their selected observation spots were chosen due to their expected population density. 
 
 
-=====
+
 
 # 'Are New Yorkers Wearing Masks' Data
+
 
 ### Visual
 
@@ -118,7 +119,12 @@ plot_ly(nyt.data,
 )
 ```
 
-This is a chart that depicts the observed mask usage rates from the Times. The data is a percentage of the observed population in these areas that were seen using masks. Some notable highlights include the very high mask usage in Flushing, an area with strong ties to mainland China, and in areas like Corona that were heavily impacted by the spread of COVID 19. It should be noted that Rockaway Beach is an outlier as it is a beach, while the other locations were busy intersections. 
+This  chart depicts the observed mask usage rates from the Times. The data is a percentage of the observed population in these areas that were seen using masks. Some notable highlights include the very high mask usage in Flushing, an area with strong ties to mainland China, and in areas like Corona that were heavily impacted by the spread of COVID 19. It should be noted that Rockaway Beach is an outlier as it is a beach, while the other locations were busy intersections. 
+
+# NYC Health - Case Rate per 100,000 people 
+
+
+### Visual
 
 ```{r COVID19 Case Rate Graph, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyc.covid19.mask,
@@ -134,6 +140,12 @@ plot_ly(nyc.covid19.mask,
 )
 
 ```
+
+
+### Background
+
+This chart visualises COVID 19 case rates per 100,000 people in the same ZCTAs that the Times reported on. As mentioned earlier, data is taken from 2 weeks before and after the Times reporting on July 27-30 and samples data from the following dates: July 13, July 20, July 27, August 3, and August 10. The ZCTA with the highest case rate within this set is Corona (11368), which borders the ZCTA with the highest case rate in NYC (East Elmhurst, 11369). Another observation is that the two locations reported on in Manhattan (Harlem, East Village) have relatively lower case rates than the rest of the set.
+
 
 
 
