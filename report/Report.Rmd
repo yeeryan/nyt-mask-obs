@@ -186,4 +186,37 @@ plot_ly(nyc.avg.rate.mask,
 
 ```
 
+## Regression Analysis
+
+Out of curiosity, I wanted to see if population would be a statistically significant predictor of COVID 19 rates in NYC. Using the NYC Health data I already had. For this I'll use the `POP_DENOMINATOR` variable. I'll use the `PERCENT_POSITIVE`, `CASE_COUNT`, and `TOTAL_COVID_TESTS` as additional predictors.
+
+
+```{r}
+population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR + PERCENT_POSITIVE + COVID_CASE_COUNT + TOTAL_COVID_TESTS, data = nyc.covid19.data)
+
+nonpopulation_model <- lm(COVID_CASE_RATE ~ PERCENT_POSITIVE + COVID_CASE_COUNT + TOTAL_COVID_TESTS, data = nyc.covid19.data)
+
+summary(population_model)
+
+summary(nonpopulation_model)
+
+```
+
+
+```{r}
+anova(population_model,nonpopulation_model)
+```
+```{r}
+confint(population_model)
+
+confint(nonpopulation_model)
+
+```
+
+
+```{r}
+autoplot(population_model)
+
+autoplot(nonpopulation_model)
+```
 
