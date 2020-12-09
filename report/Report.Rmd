@@ -146,34 +146,14 @@ plot_ly(nyc.covid19.mask,
 
 This chart visualises COVID 19 case rates per 100,000 people in the same ZCTAs that the Times reported on. As mentioned earlier, data is taken from 2 weeks before and after the Times reporting on July 27-30 and samples data from the following dates: July 13, July 20, July 27, August 3, and August 10. The ZCTA with the highest case rate within this set is Corona (11368), which borders the ZCTA with the highest case rate in NYC (East Elmhurst, 11369). Another observation is that the two locations reported on in Manhattan (Harlem, East Village) have relatively lower case rates than the rest of the set.
 
-
-
-
-```{r COVID19 Mask Observations and Percent Positive, echo=FALSE, results='HIDE', warning=FALSE}
-plot_ly(nyt.data,
-        x = ~area,
-        y = ~obs_mask,
-        type = 'scatter',
-        mode = 'markers',
-        name = 'Mask Rate',
-        visible = T) %>% 
-  add_trace(data_0713, y = data_0713$PERCENT_POSITIVE, name = 'July 13', visible = T) %>% 
-  add_trace(data_0720, y = data_0720$PERCENT_POSITIVE, name = 'July 20', visible = T) %>% 
-  add_trace(data_0727, y = data_0727$PERCENT_POSITIVE, name = 'July 27', visible = T) %>% 
-  add_trace(data_0803, y = data_0803$PERCENT_POSITIVE, name = 'August 3', visible = T) %>% 
-  add_trace(data_0810, y = data_0810$PERCENT_POSITIVE, name = 'August 10', visible = T) %>% 
-  layout(
-    title = 'Observed Mask Rates & COVID 19 Positive Rates by Area',
-    showlegend = TRUE,
-    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate",tickformat = "%"),
-    xaxis = list(title = "Area"),
-    hovermode = 'compare'
-)
-```
-
 # Analysis
 
-```{r table of average change}
+### Merging the Data
+
+Since the data is too small to conduct a regression analysis with, I've instead decided to find the average percentage change in COVID 19 cases per week and compare that to the observed mask usage rate. 
+
+
+```{r table of average change, echo=FALSE, results='HIDE', warning=FALSE}
 nyc.avg.caserate <- nyc.covid19.mask %>% 
   select("zip", "date","area", "COVID_CASE_RATE") %>% 
   dplyr::group_by(zip) %>% 
@@ -182,23 +162,23 @@ nyc.avg.caserate <- nyc.covid19.mask %>%
   summarise(avg_rate = mean(rate, na.rm = TRUE))
 
 nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>% 
-  mutate(obs_mask = 1 - obs_mask)
+  mutate(obs_mask = obs_mask)
 
 ```
 
-```{r chart}
+```{r chart, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyc.avg.rate.mask,
         x = ~area,
-        y = ~obs_mask,
+        y = ~obs_mask*100,
         type = 'scatter',
         mode = 'markers',
         name = 'Mask Rate',
         visible = T) %>% 
-  add_trace(nyc.avg.rate.mask, y = ~avg_rate, name = 'Avg. Change Rate', visible = T) %>% 
+  add_trace(nyc.avg.rate.mask, y = ~avg_rate*100, name = 'Avg. Change Rate', visible = T) %>% 
   layout(
     title = 'Observed Mask Rates & COVID 19 Positive Rates by Area',
     showlegend = TRUE,
-    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate",tickformat = "%"),
+    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate",ticksuffix ="%"),
     xaxis = list(title = "Area"),
     hovermode = 'compare'
 )
@@ -206,9 +186,4 @@ plot_ly(nyc.avg.rate.mask,
 
 ```
 
-```{r}
-avg_rate.mask_model <- lm(formula = avg_rate ~ obs_mask, data = nyc.avg.rate.mask)
 
-summary(avg_rate.mask_model)
-
-```
