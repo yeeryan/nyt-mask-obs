@@ -149,8 +149,7 @@ This chart visualises COVID 19 case rates per 100,000 people in the same ZCTAs t
 # Analysis
 
 ### Merging the Data
-
-Since the data is too small to conduct a regression analysis with, I've instead decided to find the average percentage change in COVID 19 cases per week and compare that to the observed mask usage rate. 
+I've instead decided to find the average percentage change in COVID 19 cases per week and compare that to the observed mask usage rate. 
 
 
 ```{r table of average change, echo=FALSE, results='HIDE', warning=FALSE}
@@ -164,59 +163,77 @@ nyc.avg.caserate <- nyc.covid19.mask %>%
 nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>% 
   mutate(obs_mask = obs_mask)
 
+cor.test(nyc.avg.rate.mask$obs_mask, nyc.avg.rate.mask$avg_rate)
 ```
 
-```{r chart, echo=FALSE, results='HIDE', warning=FALSE}
-plot_ly(nyc.avg.rate.mask,
-        x = ~area,
-        y = ~obs_mask*100,
-        type = 'scatter',
-        mode = 'markers',
-        name = 'Mask Rate',
-        visible = T) %>% 
-  add_trace(nyc.avg.rate.mask, y = ~avg_rate*100, name = 'Avg. Change Rate', visible = T) %>% 
-  layout(
-    title = 'Observed Mask Rates & COVID 19 Positive Rates by Area',
-    showlegend = TRUE,
-    yaxis = list(title = "% of Masks Observed/COVID 19 Positive Rate",ticksuffix ="%"),
-    xaxis = list(title = "Area"),
-    hovermode = 'compare'
-)
+```{r}
+```
 
+
+```{r logi model}
+mask.rate_logmodel <- glm(avg_rate ~ obs_mask, family=binomial(link='logit'), data = nyc.avg.rate.mask)
+
+summary(mask.rate_logmodel)
+
+```
+```{r chart, echo=FALSE, results='HIDE', warning=FALSE}
+ggplotly(
+ggplot(nyc.avg.rate.mask, aes(x = obs_mask, y = avg_rate)) + 
+  geom_point() +
+  stat_smooth(method="glm", method.args = list(family="binomial"), se=FALSE) +
+  ggtitle("Observed Mask Rates & Avg Change in Case Rate") +
+  xlab("Observed Mask Rate") +
+  ylab("Average Change in Case Rate")
+  )
+# plot_ly(nyc.avg.rate.mask,
+#         x = ~obs_mask*100,
+#         y = ~avg_rate*100,
+#         type = 'scatter',
+#         mode = 'markers',
+#         color = ~area,
+#         hoverinfo = 'text',
+#     text = ~paste('</br> Area: ', area,
+#                   '</br> Mask Rate: ', obs_mask*100,'%',
+#                   '</br> Avg Rate: ', avg_rate*100,'%'),
+#         visible = T) %>% 
+#   layout(
+#     title = 'Observed Mask Rates & Avg Case Rate by Area',
+#     showlegend = TRUE,
+#     yaxis = list(title = "Average Weekly Case Rate Change", ticksuffix ="%"),
+#     xaxis = list(title = "Mask Observation Rate", ticksuffix ="%")
+# )
+
+
+```
+
+```{r}
+mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = (nyc.covid19.mask %>% group_by(zip) %>% sample_n(1)))
+
+summary(mask_linmodel)
 
 ```
 
 ## Regression Analysis
 
-Out of curiosity, I wanted to see if population would be a statistically significant predictor of COVID 19 rates in NYC. Using the NYC Health data I already had. For this I'll use the `POP_DENOMINATOR` variable. I'll use the `PERCENT_POSITIVE`, `CASE_COUNT`, and `TOTAL_COVID_TESTS` as additional predictors.
+I wanted to see if population would be a statistically significant predictor of COVID 19 rates in NYC. Using the NYC Health data I already had. For this I'll use the `POP_DENOMINATOR` variable which measures the known population count at the start of the pandemic. 
 
 
 ```{r}
-population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR + PERCENT_POSITIVE + COVID_CASE_COUNT + TOTAL_COVID_TESTS, data = nyc.covid19.data)
-
-nonpopulation_model <- lm(COVID_CASE_RATE ~ PERCENT_POSITIVE + COVID_CASE_COUNT + TOTAL_COVID_TESTS, data = nyc.covid19.data)
+population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.data)
 
 summary(population_model)
-
-summary(nonpopulation_model)
-
 ```
 
 
 ```{r}
-anova(population_model,nonpopulation_model)
+anova(population_model)
 ```
 ```{r}
 confint(population_model)
-
-confint(nonpopulation_model)
-
 ```
 
 
 ```{r}
 autoplot(population_model)
-
-autoplot(nonpopulation_model)
 ```
 
