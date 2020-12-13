@@ -177,49 +177,48 @@ summary(mask.rate_logmodel)
 
 ```
 ```{r chart, echo=FALSE, results='HIDE', warning=FALSE}
-ggplotly(
 ggplot(nyc.avg.rate.mask, aes(x = obs_mask, y = avg_rate)) + 
   geom_point() +
-  stat_smooth(method="glm", method.args = list(family="binomial"), se=FALSE) +
+  stat_smooth(method="glm", method.args = list(family="binomial"), se=FALSE, fullrange = TRUE) +
   ggtitle("Observed Mask Rates & Avg Change in Case Rate") +
   xlab("Observed Mask Rate") +
-  ylab("Average Change in Case Rate")
-  )
-# plot_ly(nyc.avg.rate.mask,
-#         x = ~obs_mask*100,
-#         y = ~avg_rate*100,
-#         type = 'scatter',
-#         mode = 'markers',
-#         color = ~area,
-#         hoverinfo = 'text',
-#     text = ~paste('</br> Area: ', area,
-#                   '</br> Mask Rate: ', obs_mask*100,'%',
-#                   '</br> Avg Rate: ', avg_rate*100,'%'),
-#         visible = T) %>% 
-#   layout(
-#     title = 'Observed Mask Rates & Avg Case Rate by Area',
-#     showlegend = TRUE,
-#     yaxis = list(title = "Average Weekly Case Rate Change", ticksuffix ="%"),
-#     xaxis = list(title = "Mask Observation Rate", ticksuffix ="%")
-# )
+  ylab("Average Change in Case Rate") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_x_continuous(labels = scales::percent)
+
 
 
 ```
 
 ```{r}
-mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = (nyc.covid19.mask %>% group_by(zip) %>% sample_n(1)))
+nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1)
+
+mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = nyc.covid19.mask_sample)
 
 summary(mask_linmodel)
 
 ```
 
-## Regression Analysis
+```{r}
+ggplot(nyc.covid19.mask_sample, aes(x = obs_mask, y = COVID_CASE_RATE)) + 
+  geom_point() +
+  stat_smooth(method="lm", se = FALSE) +
+  ggtitle("Observed Mask Rates & Case Rate") +
+  xlab("Observed Mask Rate") +
+  ylab("COVID Case Rate") +
+  scale_x_continuous(labels = scales::percent)
+
+```
+
+## Additional Analysis
 
 I wanted to see if population would be a statistically significant predictor of COVID 19 rates in NYC. Using the NYC Health data I already had. For this I'll use the `POP_DENOMINATOR` variable which measures the known population count at the start of the pandemic. 
 
 
 ```{r}
-population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.data)
+nyc.covid19.data_sample <- nyc.covid19.data %>% group_by(zip) %>% sample_n(1)
+
+population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.data_sample)
 
 summary(population_model)
 ```
