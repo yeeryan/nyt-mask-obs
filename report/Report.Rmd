@@ -191,13 +191,14 @@ ggplot(nyc.avg.rate.mask, aes(x = obs_mask, y = avg_rate)) +
 ```
 
 ```{r}
-nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1)
+nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1) %>% drop_na() %>% ungroup()
 
 mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = nyc.covid19.mask_sample)
 
 summary(mask_linmodel)
 
 ```
+
 
 ```{r}
 ggplot(nyc.covid19.mask_sample, aes(x = obs_mask, y = COVID_CASE_RATE)) + 
@@ -216,17 +217,36 @@ I wanted to see if population would be a statistically significant predictor of 
 
 
 ```{r}
-nyc.covid19.data_sample <- nyc.covid19.data %>% group_by(zip) %>% sample_n(1)
+nyc.covid19.data_sample <- nyc.covid19.data %>% group_by(zip) %>% sample_n(1) %>%  drop_na() %>% ungroup()
 
 population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.data_sample)
 
 summary(population_model)
 ```
 
+```{r}
+ggplot(data = nyc.covid19.data_sample)
+```
+
+
+```{r}
+plot_ly(nyc.covid19.data_sample,
+       x = ~POP_DENOMINATOR,
+       y = ~COVID_CASE_RATE,
+       type = 'scatter',
+       mode = 'markers') %>% 
+  add_trace(data = nyc.covid19.data_sample,
+            x = ~POP_DENOMINATOR,
+            y = fitted(population_model),
+            type = 'scatter',
+            mode = 'lines')
+```
+
 
 ```{r}
 anova(population_model)
 ```
+
 ```{r}
 confint(population_model)
 ```
