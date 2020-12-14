@@ -166,11 +166,10 @@ nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>%
 cor.test(nyc.avg.rate.mask$obs_mask, nyc.avg.rate.mask$avg_rate)
 ```
 
-```{r}
-```
+## Logistical Regression Model
 
 
-```{r logi model}
+```{r logi model, echo=FALSE, results='HIDE', warning=FALSE}
 mask.rate_logmodel <- glm(avg_rate ~ obs_mask, family=binomial(link='logit'), data = nyc.avg.rate.mask)
 
 summary(mask.rate_logmodel)
@@ -190,7 +189,9 @@ ggplot(nyc.avg.rate.mask, aes(x = obs_mask, y = avg_rate)) +
 
 ```
 
-```{r}
+## Linear Regression Model
+
+```{r mask case rate linear model, echo=FALSE, results='HIDE', warning=FALSE}
 nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1) %>% drop_na() %>% ungroup()
 
 mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = nyc.covid19.mask_sample)
@@ -200,7 +201,7 @@ summary(mask_linmodel)
 ```
 
 
-```{r}
+```{r linear model plot, echo=FALSE, results='HIDE', warning=FALSE}
 ggplot(nyc.covid19.mask_sample, aes(x = obs_mask, y = COVID_CASE_RATE)) + 
   geom_point() +
   stat_smooth(method="lm", se = FALSE) +
@@ -211,12 +212,14 @@ ggplot(nyc.covid19.mask_sample, aes(x = obs_mask, y = COVID_CASE_RATE)) +
 
 ```
 
-## Additional Analysis
+# Additional Analysis
 
 I wanted to see if population would be a statistically significant predictor of COVID 19 rates in NYC. Using the NYC Health data I already had. For this I'll use the `POP_DENOMINATOR` variable which measures the known population count at the start of the pandemic. 
 
 
-```{r}
+## Population and Case Rates
+
+```{r pop and case rate lin model, echo=FALSE, results='HIDE', warning=FALSE}
 nyc.covid19.data_sample <- nyc.covid19.data %>% group_by(zip) %>% sample_n(1) %>%  drop_na() %>% ungroup()
 
 population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.data_sample)
@@ -224,24 +227,33 @@ population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.dat
 summary(population_model)
 ```
 
-```{r}
-ggplot(data = nyc.covid19.data_sample)
-```
 
-
-```{r}
+```{r pop and case plot, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly(nyc.covid19.data_sample,
        x = ~POP_DENOMINATOR,
        y = ~COVID_CASE_RATE,
        type = 'scatter',
-       mode = 'markers') %>% 
+       mode = 'markers',
+       name = "COVID 19 Data",
+       hovertemplate = ~paste('ZCTA:', zip,
+                             '<br>Population Denominator:', POP_DENOMINATOR,
+                             '<br>COVID Case Rate:', COVID_CASE_RATE)) %>% 
   add_trace(data = nyc.covid19.data_sample,
             x = ~POP_DENOMINATOR,
             y = fitted(population_model),
             type = 'scatter',
-            mode = 'lines')
+            mode = 'lines',
+            name = "Regression Line",
+            hovertemplate = ~paste('Population Denominator', POP_DENOMINATOR,
+                                   '<br>Projected Case Rate', fitted(population_model))) %>% 
+  layout(
+    title = "Population Denominator & Case Rate with Regression Line",
+    xaxis = list(title = "Population Denominator"),
+    yaxis = list(title = "COVID Case Rate")
+  )
 ```
 
+#### Model Info
 
 ```{r}
 anova(population_model)
@@ -255,4 +267,6 @@ confint(population_model)
 ```{r}
 autoplot(population_model)
 ```
+
+# Reflection
 
