@@ -216,17 +216,37 @@ I wanted to see if population would be a statistically significant predictor of 
 
 
 ```{r}
-nyc.covid19.data_sample <- nyc.covid19.data %>% group_by(zip) %>% sample_n(1)
+nyc.covid19.data_sample <- nyc.covid19.data %>% group_by(zip) %>% sample_n(1) %>%  drop_na()
 
 population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.data_sample)
 
 summary(population_model)
 ```
 
+```{r}
+ggplot(data = nyc.covid19.data_sample)
+```
+
+
+```{r}
+plot_ly(nyc.covid19.data_sample,
+       x = ~POP_DENOMINATOR,
+       y = ~COVID_CASE_RATE,
+       type = 'scatter',
+       mode = 'markers') %>% 
+  add_trace(data = nyc.covid19.data_sample,
+            x = ~POP_DENOMINATOR,
+            y = fitted(population_model),
+            type = 'scatter',
+            mode = 'lines')
+
+```
+
 
 ```{r}
 anova(population_model)
 ```
+
 ```{r}
 confint(population_model)
 ```
