@@ -10,12 +10,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggfortify)
 library(plotly)
-library(dplyr)
 
 setwd("~/Projects/nyt-mask-obs/")
 
 #source("R/import.R")
 source("setup.R")
+options(tigris_use_cache = TRUE)
 source("R/unified_plot.R")
 
 
@@ -116,7 +116,12 @@ plot_ly(nyt.data,
         y = ~obs_mask,
         color = ~area,
         mode = 'bar'
-)
+) %>% 
+  layout(
+    title = "Observed Mask Usage Rates from The New York Times Article",
+    yaxis = list(title = "Observed Mask Rate", tickformat = '%'),
+    xaxis = list(title = "Area")
+  )
 ```
 
 This  chart depicts the observed mask usage rates from the Times. The data is a percentage of the observed population in these areas that were seen using masks. Some notable highlights include the very high mask usage in Flushing, an area with strong ties to mainland China, and in areas like Corona that were heavily impacted by the spread of COVID 19. It should be noted that Rockaway Beach is an outlier as it is a beach, while the other locations were busy intersections. 
@@ -131,9 +136,10 @@ plot_ly(nyc.covid19.mask,
         x = ~date,
         y = ~COVID_CASE_RATE,
         color = ~area,
-        mode = 'lines+markers') %>% 
+        mode = 'lines+markers'
+) %>% 
   layout(
-    title = 'COVID 19 Case Rate per 100,000',
+    title = 'COVID 19 Case Rate per 100,000 from NYC Health',
     showlegend = TRUE,
     yaxis = list(title = "COVID 19 Case Rate"),
     xaxis = list(title = "Date")
@@ -166,33 +172,49 @@ nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>%
 cor.test(nyc.avg.rate.mask$obs_mask, nyc.avg.rate.mask$avg_rate)
 ```
 
-## Logistical Regression Model
-
-
-```{r logi model, echo=FALSE, results='HIDE', warning=FALSE}
-mask.rate_logmodel <- glm(avg_rate ~ obs_mask, family=binomial(link='logit'), data = nyc.avg.rate.mask)
-
-summary(mask.rate_logmodel)
-
-```
-```{r chart, echo=FALSE, results='HIDE', warning=FALSE}
-ggplot(nyc.avg.rate.mask, aes(x = obs_mask, y = avg_rate)) + 
-  geom_point() +
-  stat_smooth(method="glm", method.args = list(family="binomial"), se=FALSE, fullrange = TRUE) +
-  ggtitle("Observed Mask Rates & Avg Change in Case Rate") +
-  xlab("Observed Mask Rate") +
-  ylab("Average Change in Case Rate") +
-  scale_y_continuous(labels = scales::percent) +
-  scale_x_continuous(labels = scales::percent)
-
-
-
-```
-
 ## Linear Regression Model
 
+
+```{r linear model, echo=FALSE, results='HIDE', warning=FALSE}
+nyc.avg.rate.mask <- nyc.avg.rate.mask %>% filter(!zip == 11694)
+mask.rate_linmodel <- lm(avg_rate ~ obs_mask, data = nyc.avg.rate.mask)
+
+summary(mask.rate_linmodel)
+
+```
+
+
+```{r linear model plot, echo=FALSE, results='HIDE', warning=FALSE} 
+plot_ly(nyc.avg.rate.mask,
+       x = ~obs_mask,
+       y = ~avg_rate,
+       type = 'scatter',
+       mode = 'markers',
+       name = "COVID 19 Data",
+       hovertemplate = ~paste('ZCTA:', zip,
+                             '<br>Mask Rate:', obs_mask,
+                             '<br>Average Change Rate:', avg_rate)) %>% 
+  add_trace(data = nyc.avg.rate.mask,
+            x = ~obs_mask,
+            y = fitted(mask.rate_linmodel),
+            type = 'scatter',
+            mode = 'lines',
+            name = "Regression Line",
+            hovertemplate = ~paste('Mask Rate', obs_mask,
+                                   '<br>Projected Change Rate', fitted(mask.rate_linmodel))) %>% 
+  layout(
+    title = "Average Change Rate & Mask Rate with Regression Line",
+    xaxis = list(title = "Observed Mask Rate", tickformat = '%'),
+    yaxis = list(title = "Average Change Rate")
+  )
+```
+
+
+## Linear Regression Model
+ 
 ```{r mask case rate linear model, echo=FALSE, results='HIDE', warning=FALSE}
-nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1) %>% drop_na() %>% ungroup()
+
+nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1) %>% drop_na() %>% ungroup() %>% filter(!zip == 11694)
 
 mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = nyc.covid19.mask_sample)
 
@@ -200,17 +222,31 @@ summary(mask_linmodel)
 
 ```
 
-
-```{r linear model plot, echo=FALSE, results='HIDE', warning=FALSE}
-ggplot(nyc.covid19.mask_sample, aes(x = obs_mask, y = COVID_CASE_RATE)) + 
-  geom_point() +
-  stat_smooth(method="lm", se = FALSE) +
-  ggtitle("Observed Mask Rates & Case Rate") +
-  xlab("Observed Mask Rate") +
-  ylab("COVID Case Rate") +
-  scale_x_continuous(labels = scales::percent)
-
+```{r}
+plot_ly(nyc.covid19.mask_sample,
+       x = ~obs_mask,
+       y = ~COVID_CASE_RATE,
+       type = 'scatter',
+       mode = 'markers',
+       name = "COVID 19 Data",
+       hovertemplate = ~paste('ZCTA:', zip,
+                             '<br>Mask Rate:', obs_mask,
+                             '<br>Case Rate:', COVID_CASE_RATE)) %>% 
+  add_trace(data = nyc.covid19.mask_sample,
+            x = ~obs_mask,
+            y = fitted(mask_linmodel),
+            type = 'scatter',
+            mode = 'lines',
+            name = "Regression Line",
+            hovertemplate = ~paste('Mask Rate', obs_mask,
+                                   '<br>Projected Case Rate', fitted(mask_linmodel))) %>% 
+  layout(
+    title = "Average Change Rate & Mask Rate with Regression Line",
+    xaxis = list(title = "Observed Mask Rate", tickformat = '%'),
+    yaxis = list(title = "Case Rate")
+  )
 ```
+
 
 # Additional Analysis
 
