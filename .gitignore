@@ -41,3 +41,6 @@ vignettes/*.pdf
 
 # DS Store
 .DS_Store
+
+report/*.html
+
