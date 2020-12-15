@@ -214,32 +214,82 @@ plot_ly(nyc.avg.rate.mask,
  
 ```{r mask case rate linear model, echo=FALSE, results='HIDE', warning=FALSE}
 
-nyc.covid19.mask_sample <- nyc.covid19.mask %>% group_by(zip) %>% sample_n(1) %>% drop_na() %>% ungroup() %>% filter(!zip == 11694)
+nyc.covid19.mask <- nyc.covid19.mask %>%
+  drop_na() %>% 
+  filter(!zip == 11694)
 
-mask_linmodel <- lm(COVID_CASE_RATE ~ obs_mask, data = nyc.covid19.mask_sample)
+mask0713 <- filter(nyc.covid19.mask, date == "2020-07-13", na.rm = TRUE)
+mask0727 <- filter(nyc.covid19.mask, date == "2020-07-27", na.rm = TRUE)
+mask0810 <- filter(nyc.covid19.mask, date == "2020-08-10", na.rm = TRUE)
 
-summary(mask_linmodel)
+mask_linmodel0713 <- lm(COVID_CASE_RATE ~ obs_mask, 
+                        data = mask0713)
+
+mask_linmodel0727 <- lm(COVID_CASE_RATE ~ obs_mask, 
+                        data = mask0727)
+
+mask_linmodel0810 <- lm(COVID_CASE_RATE ~ obs_mask, 
+                        data = mask0810)
+
+summary(mask_linmodel0713)
+summary(mask_linmodel0727)
+summary(mask_linmodel0810)
 
 ```
 
 ```{r}
-plot_ly(nyc.covid19.mask_sample,
+plot_ly() %>% 
+  add_markers(data = mask0713,
        x = ~obs_mask,
        y = ~COVID_CASE_RATE,
        type = 'scatter',
        mode = 'markers',
-       name = "COVID 19 Data",
+       name = "July 17 Data",
        hovertemplate = ~paste('ZCTA:', zip,
                              '<br>Mask Rate:', obs_mask,
                              '<br>Case Rate:', COVID_CASE_RATE)) %>% 
-  add_trace(data = nyc.covid19.mask_sample,
+    add_markers(data = mask0727,
+       x = ~obs_mask,
+       y = ~COVID_CASE_RATE,
+       type = 'scatter',
+       mode = 'markers',
+       name = "July 27 Data",
+       hovertemplate = ~paste('ZCTA:', zip,
+                             '<br>Mask Rate:', obs_mask,
+                             '<br>Case Rate:', COVID_CASE_RATE)) %>% 
+    add_markers(data = mask0810,
+       x = ~obs_mask,
+       y = ~COVID_CASE_RATE,
+       type = 'scatter',
+       mode = 'markers',
+       name = "August 10 Data",
+       hovertemplate = ~paste('ZCTA:', zip,
+                             '<br>Mask Rate:', obs_mask,
+                             '<br>Case Rate:', COVID_CASE_RATE)) %>% 
+  add_trace(data = mask0713,
             x = ~obs_mask,
-            y = fitted(mask_linmodel),
+            y = fitted(mask_linmodel0713),
             type = 'scatter',
             mode = 'lines',
-            name = "Regression Line",
+            name = "July 13 Regression Line",
             hovertemplate = ~paste('Mask Rate', obs_mask,
-                                   '<br>Projected Case Rate', fitted(mask_linmodel))) %>% 
+                                   '<br>Projected Case Rate', fitted(mask_linmodel0713))) %>% 
+  add_trace(data = mask0727,
+            x = ~obs_mask,
+            y = fitted(mask_linmodel0727),
+            type = 'scatter',
+            mode = 'lines',
+            name = "July 27 Regression Line",
+            hovertemplate = ~paste('Mask Rate', obs_mask,
+                                   '<br>Projected Case Rate', fitted(mask_linmodel0727))) %>% 
+  add_trace(data = mask0810,
+            x = ~obs_mask,
+            y = fitted(mask_linmodel0810),
+            type = 'scatter',
+            mode = 'lines',
+            name = "August 10 Regression Line",
+            hovertemplate = ~paste('Mask Rate', obs_mask,
+                                   '<br>Projected Case Rate', fitted(mask_linmodel0810))) %>% 
   layout(
     title = "Average Change Rate & Mask Rate with Regression Line",
     xaxis = list(title = "Observed Mask Rate", tickformat = '%'),
