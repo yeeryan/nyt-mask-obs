@@ -154,8 +154,9 @@ This chart visualises COVID 19 case rates per 100,000 people in the same ZCTAs t
 
 # Analysis
 
-### Merging the Data
-I've instead decided to find the average percentage change in COVID 19 cases per week and compare that to the observed mask usage rate. 
+### Merging the Data - Average Change in Case Rates
+
+In order to capture the impact of masks throughout the 5 weeks, I calculated the average rate of change in case rates and used this to compare with the observed mask rates. I created a linear regression model using this average rate and the observed mask rates to determine if there is a statistically significant relationship between these two variables.
 
 
 ```{r table of average change, echo=FALSE, results='HIDE', warning=FALSE}
@@ -172,8 +173,7 @@ nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>%
 cor.test(nyc.avg.rate.mask$obs_mask, nyc.avg.rate.mask$avg_rate)
 ```
 
-## Linear Regression Model
-
+Since the Rockaway Beach (ZIP: 11694) observed mask rates were taken in conditions that are significantly different from the rest of the observations, I've excluded them from the regression models.
 
 ```{r linear model, echo=FALSE, results='HIDE', warning=FALSE}
 nyc.avg.rate.mask <- nyc.avg.rate.mask %>% filter(!zip == 11694)
@@ -182,6 +182,15 @@ mask.rate_linmodel <- lm(avg_rate ~ obs_mask, data = nyc.avg.rate.mask)
 summary(mask.rate_linmodel)
 
 ```
+
+When looking at the actual model, however, we are unable to reject the null hypothesis as p > .05 at .174. Based on this, I cannot say that masks have a relationship to the change rates in COVID 19 cases.
+
+
+```{r}
+autoplot(mask.rate_linmodel)
+```
+
+When looking at the diagnostic plots, we can find that there is not a clear linear relationship in this model, and that there is a heteroscedasticity problem with the data.
 
 
 ```{r linear model plot, echo=FALSE, results='HIDE', warning=FALSE} 
@@ -210,7 +219,9 @@ plot_ly(nyc.avg.rate.mask,
 ```
 
 
-## Linear Regression Model
+### Merging the Data - Case Rates
+
+Instead of looking at average changes in case rates, I decided to also take a look the case rates directly. I took data from the beginning, middle, and end of my time frame and created linear models for each with observed mask rates. Similar to the previous section, I also removed the Rockaway Beach data.
  
 ```{r mask case rate linear model, echo=FALSE, results='HIDE', warning=FALSE}
 
@@ -236,6 +247,17 @@ summary(mask_linmodel0727)
 summary(mask_linmodel0810)
 
 ```
+
+When looking at the actual models, however, we are unable to reject the null hypothesis as p > .05 at with p = ~.30 for each model. Based on this, I cannot say that masks have a relationship to the COVID 19 case rate.
+
+
+
+```{r}
+autoplot(mask_linmodel0727)
+```
+
+When looking at the diagnostic plots, we can find that there is not a clear linear relationship in this model, and that there is a heteroscedasticity problem with the data.
+
 
 ```{r}
 plot_ly() %>% 
@@ -291,7 +313,7 @@ plot_ly() %>%
             hovertemplate = ~paste('Mask Rate', obs_mask,
                                    '<br>Projected Case Rate', fitted(mask_linmodel0810))) %>% 
   layout(
-    title = "Average Change Rate & Mask Rate with Regression Line",
+    title = "Case Rate & Mask Rate with Regression Line",
     xaxis = list(title = "Observed Mask Rate", tickformat = '%'),
     yaxis = list(title = "Case Rate")
   )
@@ -300,7 +322,7 @@ plot_ly() %>%
 
 # Additional Analysis
 
-I wanted to see if population would be a statistically significant predictor of COVID 19 rates in NYC. Using the NYC Health data I already had. For this I'll use the `POP_DENOMINATOR` variable which measures the known population count at the start of the pandemic. 
+Finally, I decided to see if population was a statistically significant predictor of case rates. Since the `POP_DENOMINATOR` is the known population of an area at the start of the pandemic, all the data needed was in the NYC Health dataset. I sampled the case rate and population for each ZCTA which was randomly selected from a date. For example, the data for 10001 could be from 7/13, 7/20,7/27, 8/3, or 8/10. I created a linear regression model from this dataset and plotted it below:
 
 
 ## Population and Case Rates
@@ -312,6 +334,8 @@ population_model <- lm(COVID_CASE_RATE ~ POP_DENOMINATOR, data = nyc.covid19.dat
 
 summary(population_model)
 ```
+
+When looking at this model, we can reject the null hypothesis as clearly p < .05. When looking closer at the model, however, we can find that the R^2 value is near 0 which means that the model does not explain much of the variation in the data. 
 
 
 ```{r pop and case plot, echo=FALSE, results='HIDE', warning=FALSE}
@@ -340,10 +364,6 @@ plot_ly(nyc.covid19.data_sample,
 ```
 
 #### Model Info
-
-```{r}
-anova(population_model)
-```
 
 ```{r}
 confint(population_model)
