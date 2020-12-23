@@ -41,12 +41,14 @@ data_0810 <- date_covid19.mask("2020-08-10")
 
 ```
 
-<div style= "float:right;position: relative; top: -80px; padding:10px">
+<div style=  "padding:10px">
+
+### COVID 19 Case Rates and Observed Mask Usage in NYC
 
 ```{r Map, echo=FALSE, results='HIDE', warning=FALSE}
 unified.plot
 ```
-Toggle between layers to view COVID 19 rates from NYC Health and observed mask usage by the New York Times. 
+Toggle between layers to view COVID 19 rates from NYC Health and observed mask usage by the New York Times. Data is divided by ZCTA.
 
 Click on an area for more info.
 
@@ -59,10 +61,10 @@ Using data from NYC Health, these layers map out city-wide COVID 19 Rates per 10
 
 #### New York Times Mask Observations (NYT Obs)
 
-Using data from the New York Times article "Are New Yorkers Wearing Masks?", this layer maps out observed mask usage rates by the Times' reporters between July 27 to July 30, 2020. The additional NYT Obs layers shows observed mask usage rates based on perceived gender. The ZCTAs where the intersections of the Times reporters were used to map out observed mask usage rates and to compare NYC Health data with. Mouseover of the ZCTA shows area name, borough, and intersection of observation as reported by the Times. ZCTAs were found by me. 
+Using data from the New York Times article "Are New Yorkers Wearing Masks?", this layer maps out observed mask usage rates by the Times' reporters between July 27 to July 30, 2020. The additional NYT Obs layers shows observed mask usage rates based on perceived gender. The ZCTAs where the intersections of the Times reporters were used to map out observed mask usage rates and to compare NYC Health data with. Mouseover of the ZCTA shows area name, borough, and intersection of observation as reported by the Times. ZCTAs were found by looking up the locations of the intersecitons. 
 
-Link to article:
-https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html
+<a href = "https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html">Link to Article</a>
+
 </p>
 
 -----
@@ -71,7 +73,7 @@ https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html
 ## Methodology
 This report aims to compare the observed mask usage rates in select areas in NYC to the COVID 19 data taken around the same time. The data is shown with visuals such as maps and charts for comparison across areas in NYC. Each area in this analysis is divided by ZCTA which is used by NYC Health and can be inferred from the NY Times article.  The dates chosen are due to the estimated 2 week time period for COVID 19-related symptoms show. 
 
-[FINISH SECTION LATER]
+Linear regression analysis is conducted later to determine if observed mask rates and population are signficiant predictors of case rates.
 
 ## Motive
 I wanted to see if the observed mask usage rates from the Times would correlate with the the spread of COVID 19 in NYC, and also wanted an opportunity to use data visualisations to compare related data sets.
@@ -80,14 +82,13 @@ I wanted to see if the observed mask usage rates from the Times would correlate 
 
 ### NYC Health
 
-https://www1.nyc.gov/site/doh/covid/covid-19-data.page  
+<a href="https://www1.nyc.gov/site/doh/covid/covid-19-data.page">NYC Health COVID-19: Data</a>
 
-https://github.com/nychealth/coronavirus-data
+<a href="https://github.com/nychealth/coronavirus-data">NYC Health COVID-19 Data GitHub Repo</a>
 
 NYC Health publishes their official COVID 19 data their website and Github. I used the `data-by-modzcta.csv` data sets from the commits on the following dates: 07-13, 07-20, 07-27, 08-03, 08-10. Within these data sets, I used the `COVID_CASE_COUNT` and `PERCENT_POSITIVE` variables to determine the spread of COVID 19. Here's an overview from NYC Health:
 
-COVID_CASE_RATE - Rate of confirmed cases per 100,000 people by modified ZCTA
-PERCENT_POSITIVE -	Percentage of people ever tested for COVID-19 with a polymerase chain reaction (PCR) test who tested positive
+*COVID_CASE_RATE* - Rate of confirmed cases per 100,000 people by modified ZCTA
 
 I chose `COVID_CASE_RATE` as it was an easy to understand metric that adjusted for population within each ZCTA. 
 
@@ -96,7 +97,7 @@ A major limitation of this dataset, as well as most relating to COVID 19 is that
 
 ### The New York Times - "Are New Yorkers Wearing Masks?"
 
-https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html
+<a href="https://www.nytimes.com/2020/08/20/nyregion/nyc-face-masks.html">The New York Times - Are New Yorkers Wearing Masks?</a>
 
 The article from the New York Times shares their observed mask usage in 14 locations throughout New York City. These observations were taken between July 27-30 in the daytime between 09:00 and 19:00. According to the Times, 340 to 567 were observed in each location and only counted pedestrians (people in cars, skateboards, bikes were excluded). The data is presented with the intersection observations were made, an overall percentage of mask usage, and percentages of mask usage for men and women. Gender was determined by someone's 'apparent gender'. I manually compiled the Times' observations across the city and used the ZCTAs that the intersections mentioned were located. 
 
@@ -115,7 +116,8 @@ plot_ly(nyt.data,
         x = ~area,
         y = ~obs_mask,
         color = ~area,
-        mode = 'bar'
+        mode = 'bar',
+        type = 'bar'
 ) %>% 
   layout(
     title = "Observed Mask Usage Rates from The New York Times Article",
@@ -136,7 +138,8 @@ plot_ly(nyc.covid19.mask,
         x = ~date,
         y = ~COVID_CASE_RATE,
         color = ~area,
-        mode = 'lines+markers'
+        mode = 'lines+markers',
+        type = 'scatter'
 ) %>% 
   layout(
     title = 'COVID 19 Case Rate per 100,000 from NYC Health',
@@ -169,8 +172,6 @@ nyc.avg.caserate <- nyc.covid19.mask %>%
 
 nyc.avg.rate.mask <- left_join(nyt.data, nyc.avg.caserate, by ="zip") %>% 
   mutate(obs_mask = obs_mask)
-
-cor.test(nyc.avg.rate.mask$obs_mask, nyc.avg.rate.mask$avg_rate)
 ```
 
 Since the Rockaway Beach (ZIP: 11694) observed mask rates were taken in conditions that are significantly different from the rest of the observations, I've excluded them from the regression models.
@@ -186,7 +187,7 @@ summary(mask.rate_linmodel)
 When looking at the actual model, however, we are unable to reject the null hypothesis as p > .05 at .174. Based on this, I cannot say that masks have a relationship to the change rates in COVID 19 cases.
 
 
-```{r}
+```{r, echo=FALSE, results='HIDE', warning=FALSE}
 autoplot(mask.rate_linmodel)
 ```
 
@@ -250,16 +251,7 @@ summary(mask_linmodel0810)
 
 When looking at the actual models, however, we are unable to reject the null hypothesis as p > .05 at with p = ~.30 for each model. Based on this, I cannot say that masks have a relationship to the COVID 19 case rate.
 
-
-
-```{r}
-autoplot(mask_linmodel0727)
-```
-
-When looking at the diagnostic plots, we can find that there is not a clear linear relationship in this model, and that there is a heteroscedasticity problem with the data.
-
-
-```{r}
+```{r, echo=FALSE, results='HIDE', warning=FALSE}
 plot_ly() %>% 
   add_markers(data = mask0713,
        x = ~obs_mask,
@@ -319,6 +311,11 @@ plot_ly() %>%
   )
 ```
 
+```{r, echo=FALSE, results='HIDE', warning=FALSE}
+autoplot(mask_linmodel0727)
+```
+
+When looking at the diagnostic plots, we can find that there is not a clear linear relationship in this model, and that there is a heteroscedasticity problem with the data.
 
 # Additional Analysis
 
@@ -365,16 +362,19 @@ plot_ly(nyc.covid19.data_sample,
 
 #### Model Info
 
-```{r}
-confint(population_model)
-```
-
-
-```{r}
+```{r, echo=FALSE, results='HIDE', warning=FALSE}
 autoplot(population_model)
 ```
 
 # Reflection
+
+With this project, my main goal was to build my data storytelling skills with interactive maps and data visualisations. The initial focus and effort around learning how to create an interactive map is why the `unified.plot` section is it's own R file.
+
+My first challenge was learning how to connect data from NYC Health with spatial data so I could create an interactive map. At this point, I realised I would also need to find a source of spatial data. Since the NYC Health data used ZCTAs, I decided it would be best to use spatial data based on ZCTAs. Fortunately for me, the US Census has spatial data based on ZCTAs and the `tigiris` package could both retrieve and merge the spatial data by ZCTAs. Once this was taken care of it was straightforward to both merge the spatial data with the data from the NY Times article, and to use Leaflet to create an interactive map.
+
+My second goal was to continue creating interactive data visualisations. I continued to use Plotly and focused more on adding additional layers (when relevant) and ensuring that the interactive-ness of the charts would add value and information for the reader. I originally did not plan to have regression analysis in this report, however, as I continued to work on this report, I was interested in finding out if mask usage or population count could be a predictor of COVID 19 rates from a statistical perspective. This gave me an opportunity to conduct regression analyses and to create interactive charts of said analysis. 
+
+I really enjoyed working on this project and I felt I took a lot away in terms of skills learned and insight from the d!@ata analysis. For future projects, I think I would like to focus on story telling through interactive data visuals alone as a challenge to build more data viz skills. Additionally, I think I would like to limit the scope and prepare a more detailed plan so I could finish it in a more timely manner.
 
 
 
